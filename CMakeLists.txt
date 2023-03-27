@@ -4,16 +4,31 @@ project(PureSpace)
 set(CMAKE_CXX_STANDART 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-find_package(PkgConfig REQUIRED)
-pkg_check_modules(entt QUIET entt)
-
-if(NOT entt_FOUND)
-    add_subdirectory(ext/entt)
-endif(NOT entt_FOUND)
-
-include_directories(ext)
-
 set(SOURCES
     main.cpp)
 
+find_package(PkgConfig REQUIRED)
+find_package(OpenGL REQUIRED)
+pkg_check_modules(externals QUIET entt glfw)
+
+if(NOT externals_FOUND)
+    add_subdirectory(ext/entt)
+    add_subdirectory(ext/glfw)
+endif(NOT entt_FOUND)
+
+option(GLFW_BUILD_DOCS "Build the GLFW documentation" OFF)
+
 add_executable(${PROJECT_NAME} ${SOURCES})
+
+target_include_directories(${PROJECT_NAME}
+    PUBLIC ext
+)
+
+target_link_directories(${PROJECT_NAME}
+    PRIVATE ext/glfw/src
+)
+
+target_link_libraries(${PROJECT_NAME}
+    glfw
+    OpenGL::GL
+)
