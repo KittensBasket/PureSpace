@@ -4,31 +4,34 @@ project(PureSpace)
 set(CMAKE_CXX_STANDART 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
+find_package(OpenGL REQUIRED)
+set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+
+find_package(GLEW 2.0 REQUIRED)
+add_compile_definitions(GLEW_STATIC)
+
 set(SOURCES
     main.cpp)
 
-find_package(PkgConfig REQUIRED)
-find_package(OpenGL REQUIRED)
-pkg_check_modules(externals QUIET entt glfw)
-
-if(NOT externals_FOUND)
-    add_subdirectory(ext/entt)
-    add_subdirectory(ext/glfw)
-endif(NOT entt_FOUND)
-
-option(GLFW_BUILD_DOCS "Build the GLFW documentation" OFF)
-
 add_executable(${PROJECT_NAME} ${SOURCES})
 
+add_subdirectory(ext/glfw)
+add_subdirectory(ext/entt)
+
 target_include_directories(${PROJECT_NAME}
-    PUBLIC ext
+    PUBLIC ext/glfw/include
+    PUBLIC ext/entt/single_include
 )
 
 target_link_directories(${PROJECT_NAME}
-    PRIVATE ext/glfw/src
+    PRIVATE glew
+    PRIVATE glfw
 )
 
 target_link_libraries(${PROJECT_NAME}
-    glfw
     OpenGL::GL
+    GLEW::GLEW
+    glfw
 )

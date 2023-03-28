@@ -1,6 +1,9 @@
-[submodule "ext/glfw"]
-	path = ext/glfw
-	url = https://github.com/glfw/glfw.git
 [submodule "ext/entt"]
 	path = ext/entt
 	url = https://github.com/skypjack/entt.git
+[submodule "ext/glew"]
+	path = ext/glew
+	url = https://github.com/nigels-com/glew.git
+[submodule "ext/glfw"]
+	path = ext/glfw
+	url = https://github.com/glfw/glfw.git
