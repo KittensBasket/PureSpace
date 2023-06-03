@@ -4,46 +4,54 @@
 /* Std: */
 #include <iostream>
 
-
 /* External: */
 #include "GL/glew.h"
 #include "GLFW/glfw3.h"
 
-
 /* Own: */
-#include "shader_program.hpp"
+#include "exception.hpp"
 #include "game.hpp"
+#include "shader_program.hpp"
 
-class App {
+void glfw_error_callback(int error, const char *description)
+{
+	throw OpenglError(description);
+}
+
+class App
+{
   public:
 	App(){};
 	~App(){};
 
-	void run() {
+	void run()
+	{
 		/* Set OpenGL error callback: */
-        glfwSetErrorCallback([](int error, const char* descriprion){throw std::runtime_error("TODO: NORMAL EXCEPTION!" + std::string(descriprion));});
+		glfwSetErrorCallback(glfw_error_callback);
 
 		/* Initialize GLFW and hint to use OpenGl 3.3: */
 		if (!glfwInit())
-			throw std::runtime_error("TODO: make normal exception");
+			throw OpenglError("Unable to initalize GLFW.");
 
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 		/* Create a window and make it current context: */
 		GLFWwindow *window = glfwCreateWindow(1000, 1000, "Hello World", NULL, NULL);
-		if (!window) {
+		if (!window)
+		{
 			glfwTerminate();
-			throw std::runtime_error("TODO: make normal exception");
+			throw OpenglError("Unable to create window.");
 		}
 		glfwMakeContextCurrent(window);
 
 		/* Initialize GLEW: */
 		glewExperimental = GL_TRUE;
-		if (glewInit() != GLEW_OK) {
+		if (glewInit() != GLEW_OK)
+		{
 			glfwTerminate();
-			throw std::runtime_error("TODO: make normal exception");
+			throw OpenglError("Unable to initialize GLEW.");
 		}
 
 		/* Compile and use shader program: */
