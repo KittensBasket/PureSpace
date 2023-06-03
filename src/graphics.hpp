@@ -2,14 +2,15 @@
 #define SYSTEMS_GRAPHICS_HPP
 
 #include <string>
-#include <stdexcept>
 
 #include "GL/glew.h"
 #include <GLFW/glfw3.h>
+
 #define STB_IMAGE_IMPLEMENTATION
 #include "../ext/stb_image.h"
 
 #include "game_constants.hpp"
+#include "exception.hpp"
 
 /*
     Draw call would look like this:
@@ -18,10 +19,12 @@
    instances.size());
 */
 
-struct GraphicsData {
+struct GraphicsData
+{
   private:
 	unsigned int makeVBO(const std::vector<vertex> &base_vertices, const std::vector<vertex> &base_texture,
-	                     const size_t max_instance_cnt) {
+	                     const size_t max_instance_cnt)
+	{
 		unsigned int id;
 
 		glGenBuffers(1, &id);
@@ -40,7 +43,8 @@ struct GraphicsData {
 		return id;
 	}
 
-	unsigned int makeTexture(const char *texture_path) {
+	unsigned int makeTexture(const char *texture_path)
+	{
 		unsigned int texture_id;
 
 		int width, height, col_channels;
@@ -48,7 +52,7 @@ struct GraphicsData {
 		unsigned char *image_data = stbi_load(texture_path, &width, &height, &col_channels, 0);
 
 		if (!image_data)
-			throw std::domain_error("Unable to find image in \"" + std::string(texture_path) + "\"");
+			throw std::domain_error("Unable to load image in \"" + std::string(texture_path) + "\"");
 
 		glGenTextures(1, &texture_id);
 		glBindTexture(GL_TEXTURE_2D, texture_id);
@@ -78,15 +82,20 @@ struct GraphicsData {
 
   public:
 	GraphicsData(const std::vector<vertex> &base_vertices, const std::vector<vertex> &base_texture,
-	             const std::vector<polygon> &base_indicies, const char *texture_path,  const unsigned int max_instance_cnt)
+	             const std::vector<polygon> &base_indicies, const char *texture_path,
+	             const unsigned int max_instance_cnt)
 	    : instance_offset((base_vertices.size() + base_texture.size()) * sizeof(vertex)),
-	      max_instance_cnt(max_instance_cnt) {
+	      max_instance_cnt(max_instance_cnt)
+	{
 
 		if (base_vertices.empty() || base_texture.empty())
-			throw "TODO: better exceptions!";
+			throw std::invalid_argument("Base vertices array is empty.");
+
+		if(base_texture.empty())
+			throw std::invalid_argument("Texture vectices array is empty.");
 
 		if (base_vertices.size() != base_texture.size())
-			throw "TODO: better exceptions!";
+			throw std::invalid_argument("Base vertices and texture vertices size mismatch.");
 
 		_VBO = makeVBO(base_vertices, base_texture, max_instance_cnt);
 		glGenBuffers(1, &_IBO);
@@ -118,23 +127,27 @@ struct GraphicsData {
 		_texture_id = makeTexture(texture_path);
 	}
 
-	~GraphicsData() {
+	~GraphicsData()
+	{
 		glDeleteBuffers(1, &_VBO);
 		glDeleteBuffers(1, &_IBO);
 		glDeleteVertexArrays(1, &_VAO);
-		glDeleteTextures(1, (const unsigned int*)_texture_id);
+		glDeleteTextures(1, (const unsigned int *)_texture_id);
 	}
 
-	void writeInstances(const std::vector<instance> &instances) {
+	void writeInstances(const std::vector<instance> &instances)
+	{
 		if (instances.size() > max_instance_cnt)
-			throw "TODO: better exceptions!";
+			throw std::length_error("Unable to write " + std::to_string(instances.size()) +
+			                        " instances into buffer with max instances of " + std::to_string(max_instance_cnt));
 
 		glBindBuffer(GL_ARRAY_BUFFER, _VBO);
 		glBufferSubData(GL_ARRAY_BUFFER, instance_offset, instances.size() * sizeof(instances), instances.data());
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 	}
 
-	void use() {
+	void use()
+	{
 		glBindVertexArray(_VAO);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _IBO);
 
