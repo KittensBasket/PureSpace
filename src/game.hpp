@@ -11,21 +11,24 @@
 
 #include "game_constants.hpp"
 #include "graphics.hpp"
+#include "shader_program.hpp"
 
 class Game {
   private:
 	GLFWwindow *window;
+	ShaderProgram program;
 	entt::registry registry;
 	std::mt19937 gen_random;
 	bool pauesd = false;
 
   public:
-	Game(GLFWwindow *window) : window(window){};
+	Game(GLFWwindow *window, ShaderProgram &program) : window(window), program(program){};
 	~Game(){};
 
 	void run() {
-		std::vector<instance> instances = {{0.f , 0.f, 0}, {1.f, 1.f, 3.14f}};
-		GraphicsData graphics(SQUARE_VERTICES, SQUARE_TEXTURE_COORDS, SQUARE_POLYGONS, "../res/textures/chmonya.jpg", MAX_CHMONYA_INSTANCES_CNT);
+		std::vector<instance> instances = {{0.f, 0.f, 0}, {1.f, 1.f, 3.14f}};
+		GraphicsData graphics(SQUARE_VERTICES, SQUARE_TEXTURE_COORDS, SQUARE_POLYGONS, "../res/textures/chmonya.jpg",
+		                      MAX_CHMONYA_INSTANCES_CNT);
 		graphics.writeInstances(instances);
 
 		bool quit = 0;
@@ -36,10 +39,11 @@ class Game {
 			glClearColor(1.f, 0.5f, 0.5f, 1.f);
 
 			for (auto &inst : instances) {
-        		inst.angle += angle;
+				inst.angle += angle;
 			}
 			graphics.writeInstances(instances);
 
+			program.setSizeUniform(std::sin(angle*100.f) + 1.f);
 			graphics.use();
 			glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, 0, instances.size());
 
