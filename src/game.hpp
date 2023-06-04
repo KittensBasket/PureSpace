@@ -12,25 +12,23 @@
 
 
 #include "game_constants.hpp"
+#include "shader_program.hpp"
 #include "factories.hpp"
 #include "systems.hpp"
-
-#include <iostream>
-#include <vector>
 
 class Game {
   private:
 	GLFWwindow *window;
+	ShaderProgram program;
 	entt::registry registry;
 	std::mt19937 gen_random;
 	bool pauesd = false;
 
   public:
-	Game(GLFWwindow *window) : window(window){};
+	Game(GLFWwindow *window, ShaderProgram &program) : window(window), program(program){};
 	~Game(){};
 
 	void run() {
-
 		std::vector<GraphicsData*> graphics_map(LAST_NONE); 
 		GraphicsData chmonyas_data(SQUARE_VERTICES, SQUARE_TEXTURE_COORDS, SQUARE_POLYGONS, "../res/textures/chmonya.jpg", MAX_CHMONYA_INSTANCES_CNT);
 		graphics_map[CHMONYA] = &chmonyas_data;

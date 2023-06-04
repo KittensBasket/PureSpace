@@ -61,7 +61,7 @@ class App
 		/*!!! TODO: here must the be implementaion of main menu before game itself is launched !!!*/
 
 		/* Laucnh game: */
-		Game game(window);
+		Game game(window, shader_program);
 		game.run();
 
 		glfwTerminate();
