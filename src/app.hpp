@@ -13,7 +13,7 @@
 #include "game.hpp"
 #include "shader_program.hpp"
 
-void glfw_error_callback(int error, const char *description)
+inline void glfw_error_callback(int error, const char *description)
 {
 	throw OpenglError(description);
 }
