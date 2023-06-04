@@ -5,12 +5,18 @@
 #include "GLFW/glfw3.h"
 #include "entt/entt.hpp"
 
+#include <filesystem>
 #include <iostream>
 #include <ostream>
 #include <random>
 
+
 #include "game_constants.hpp"
-#include "graphics.hpp"
+#include "factories.hpp"
+#include "systems.hpp"
+
+#include <iostream>
+#include <vector>
 
 class Game {
   private:
@@ -24,9 +30,15 @@ class Game {
 	~Game(){};
 
 	void run() {
-		std::vector<instance> instances = {{0.f , 0.f, 0}, {1.f, 1.f, 3.14f}};
-		GraphicsData graphics(SQUARE_VERTICES, SQUARE_TEXTURE_COORDS, SQUARE_POLYGONS, "../res/textures/chmonya.jpg", MAX_CHMONYA_INSTANCES_CNT);
-		graphics.writeInstances(instances);
+
+		std::vector<GraphicsData*> graphics_map(LAST_NONE); 
+		GraphicsData chmonyas_data(SQUARE_VERTICES, SQUARE_TEXTURE_COORDS, SQUARE_POLYGONS, "../res/textures/chmonya.jpg", MAX_CHMONYA_INSTANCES_CNT);
+		graphics_map[CHMONYA] = &chmonyas_data;
+
+		entt::entity chmonya1 = makeChmonya(registry);
+		entt::entity chmonya2 = makeChmonya(registry);
+		//registry.patch<PositionAngle>(chmonya1, [](auto &PositionAngle) { PositionAngle.x = PositionAngle.y = PositionAngle.angle = 0.; });
+		//registry.patch<PositionAngle>(chmonya2, [](auto &PositionAngle) { PositionAngle.x = PositionAngle.y = PositionAngle.angle = 0.; });
 
 		bool quit = 0;
 		float angle = 0.0;
@@ -35,15 +47,10 @@ class Game {
 			glClear(GL_COLOR_BUFFER_BIT);
 			glClearColor(1.f, 0.5f, 0.5f, 1.f);
 
-			for (auto &inst : instances) {
-        		inst.angle += angle;
-			}
-			graphics.writeInstances(instances);
+			graphics_system(registry, graphics_map);
 
-			graphics.use();
-			glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, 0, instances.size());
-
-			angle += 0.00001;
+			registry.patch<PositionAngle>(chmonya1, [](auto &PositionAngle) { PositionAngle.x = PositionAngle.y = PositionAngle.angle += 0.0001; });
+			registry.patch<PositionAngle>(chmonya2, [](auto &PositionAngle) { PositionAngle.angle += 0.01; });
 
 			glfwSwapBuffers(window);
 

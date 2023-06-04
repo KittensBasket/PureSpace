@@ -5,9 +5,10 @@
 
 #include "GL/glew.h"
 #include <GLFW/glfw3.h>
+#include <vector>
 
 #define STB_IMAGE_IMPLEMENTATION
-#include "../ext/stb_image.h"
+#include "../ext/stb/stb_image.h"
 
 #include "game_constants.hpp"
 #include "exception.hpp"
@@ -23,7 +24,7 @@ struct GraphicsData
 {
   private:
 	unsigned int makeVBO(const std::vector<vertex> &base_vertices, const std::vector<vertex> &base_texture,
-	                     const size_t max_instance_cnt)
+	                     const unsigned int max_instance_cnt)
 	{
 		unsigned int id;
 
@@ -77,8 +78,10 @@ struct GraphicsData
 
 	unsigned int _texture_id;
 
-	const size_t instance_offset;
+	const unsigned int instance_offset;
 	const unsigned int max_instance_cnt;
+
+	std::vector<instance> instances;
 
   public:
 	GraphicsData(const std::vector<vertex> &base_vertices, const std::vector<vertex> &base_texture,
@@ -132,27 +135,34 @@ struct GraphicsData
 		glDeleteBuffers(1, &_VBO);
 		glDeleteBuffers(1, &_IBO);
 		glDeleteVertexArrays(1, &_VAO);
-		glDeleteTextures(1, (const unsigned int *)_texture_id);
+		glDeleteTextures(1, &_texture_id);
 	}
 
-	void writeInstances(const std::vector<instance> &instances)
+	void draw()
 	{
 		if (instances.size() > max_instance_cnt)
 			throw std::length_error("Unable to write " + std::to_string(instances.size()) +
 			                        " instances into buffer with max instances of " + std::to_string(max_instance_cnt));
-
+			
 		glBindBuffer(GL_ARRAY_BUFFER, _VBO);
 		glBufferSubData(GL_ARRAY_BUFFER, instance_offset, instances.size() * sizeof(instances), instances.data());
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
-	}
-
-	void use()
-	{
+	
 		glBindVertexArray(_VAO);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _IBO);
 
 		glBindTexture(GL_TEXTURE_2D, _texture_id);
+
+		std::cout << instances.size();
+		for (int i = 0; i < instances.size(); i++)
+        	std::cout << instances[i].x <<  ' ' << instances[i].y << std::endl;
+		glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, 0, instances.size());
+		instances.clear();
 	}
+
+	std::vector<instance>* get_vec() {
+		return &instances;
+	} 
 };
 
 #endif // SYSTEMS_GRAPHICS_HPP
