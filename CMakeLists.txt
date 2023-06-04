@@ -19,10 +19,13 @@ add_executable(${PROJECT_NAME} ${SOURCES})
 
 add_subdirectory(ext/glfw)
 add_subdirectory(ext/entt)
+add_subdirectory(ext/gtest)
 
 target_include_directories(${PROJECT_NAME}
     PUBLIC ext/glfw/include
     PUBLIC ext/entt/single_include
+    PUBLIC ext/stb
+    PUBLIC ext/gtest/googletest/include
 )
 
 target_link_directories(${PROJECT_NAME}

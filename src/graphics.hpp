@@ -153,9 +153,6 @@ struct GraphicsData
 
 		glBindTexture(GL_TEXTURE_2D, _texture_id);
 
-		std::cout << instances.size();
-		for (int i = 0; i < instances.size(); i++)
-        	std::cout << instances[i].x <<  ' ' << instances[i].y << std::endl;
 		glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, 0, instances.size());
 		instances.clear();
 	}

@@ -11,6 +11,7 @@
 #include <random>
 
 
+#include "frame_clock.hpp"
 #include "game_constants.hpp"
 #include "shader_program.hpp"
 #include "factories.hpp"
@@ -35,13 +36,16 @@ class Game {
 
 		entt::entity chmonya1 = makeChmonya(registry);
 		entt::entity chmonya2 = makeChmonya(registry);
-		//registry.patch<PositionAngle>(chmonya1, [](auto &PositionAngle) { PositionAngle.x = PositionAngle.y = PositionAngle.angle = 0.; });
-		//registry.patch<PositionAngle>(chmonya2, [](auto &PositionAngle) { PositionAngle.x = PositionAngle.y = PositionAngle.angle = 0.; });
+		registry.patch<PositionAngle>(chmonya1, [](auto &PositionAngle) { PositionAngle.x = PositionAngle.y = PositionAngle.angle = 0.; });
+		registry.patch<PositionAngle>(chmonya2, [](auto &PositionAngle) { PositionAngle.x = PositionAngle.y = PositionAngle.angle = 0.; });
+
+		program.setSizeUniform(0.25);
 
 		bool quit = 0;
 		float angle = 0.0;
 
 		while (!quit) {
+			FrameClock frame{60};
 			glClear(GL_COLOR_BUFFER_BIT);
 			glClearColor(1.f, 0.5f, 0.5f, 1.f);
 

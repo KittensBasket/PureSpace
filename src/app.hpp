@@ -1,9 +1,6 @@
 #ifndef CORE_APP_HPP
 #define CORE_APP_HPP
 
-/* Std: */
-#include <iostream>
-
 /* External: */
 #include "GL/glew.h"
 #include "GLFW/glfw3.h"
