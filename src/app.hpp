@@ -51,6 +51,10 @@ class App
 			throw OpenglError("Unable to initialize GLEW.");
 		}
 
+		/* Enable blend and transparency: */
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
 		/* Compile and use shader program: */
 		ShaderProgram shader_program("../res/shaders/vertex.vert", "../res/shaders/fragment.frag");
 		shader_program.use();

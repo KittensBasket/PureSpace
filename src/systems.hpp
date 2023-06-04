@@ -14,6 +14,8 @@ inline void graphics_system(entt::registry &reg, std::vector<GraphicsData*>& gra
 		    {view.get<PositionAngle>(e).x, view.get<PositionAngle>(e).y, view.get<PositionAngle>(e).angle});
 	}
     for (GraphicsData* graphics_data : graphics_map) {
+		if (graphics_data == nullptr)
+			continue;
         graphics_data->draw();
     }
 }
