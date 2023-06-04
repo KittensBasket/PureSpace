@@ -82,6 +82,10 @@ struct ShaderProgram
 		glUniform1f(_size_uniform_loc, value);
 	}
 
+	int get_loc() {
+		return _size_uniform_loc;
+	}
+
   private:
 	unsigned int _id;
 	int _size_uniform_loc;
