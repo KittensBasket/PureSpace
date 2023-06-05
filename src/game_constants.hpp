@@ -22,6 +22,9 @@ const std::vector<vertex> SQUARE_TEXTURE_COORDS = {{1.f, 1.f}, {1.f, 0.f}, {0.f,
 const std::vector<polygon> SQUARE_POLYGONS = {{0, 1, 3}, {1, 2, 3}};
 
 const unsigned int MAX_CHMONYA_INSTANCES_CNT = 1024;
-const unsigned int MAX_ASTEROIDS_INSTANCES_CNT = 100000;
+const unsigned int MAX_ASTEROIDS_INSTANCES_CNT = 1024;
+
+const float PLAYER_SPEED = 0.01;
+const float PLAYER_ANGLE_SPEED = 1;
 
 #endif // CORE_GAME_CONSTANTS_HPP

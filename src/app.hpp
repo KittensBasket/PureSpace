@@ -9,6 +9,7 @@
 #include "exception.hpp"
 #include "game.hpp"
 #include "shader_program.hpp"
+#include "systems.hpp"
 
 inline void glfw_error_callback(int error, const char *description)
 {
@@ -35,7 +36,7 @@ class App
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 		/* Create a window and make it current context: */
-		GLFWwindow *window = glfwCreateWindow(1000, 1000, "Hello World", NULL, NULL);
+		GLFWwindow *window = glfwCreateWindow(1080, 1080, "Pure Space", NULL, NULL);
 		if (!window)
 		{
 			glfwTerminate();
@@ -50,6 +51,9 @@ class App
 			glfwTerminate();
 			throw OpenglError("Unable to initialize GLEW.");
 		}
+
+		/* Vsync: */
+		glfwSwapInterval(1);
 
 		/* Enable blend and transparency: */
 		glEnable(GL_BLEND);
