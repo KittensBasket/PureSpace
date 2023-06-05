@@ -61,6 +61,10 @@ struct ShaderProgram
 
 		glDeleteShader(vertex);
 		glDeleteShader(fragment);
+
+		_size_uniform_loc = glGetUniformLocation(_id, "Size");
+		if(_size_uniform_loc == -1)
+			throw ShaderProgramError("Unable to locate size uniform.");
 	}
 
 	~ShaderProgram()
@@ -73,8 +77,18 @@ struct ShaderProgram
 		glUseProgram(_id);
 	}
 
+	void setSizeUniform(const float value)
+	{
+		glUniform1f(_size_uniform_loc, value);
+	}
+
+	int get_loc() {
+		return _size_uniform_loc;
+	}
+
   private:
 	unsigned int _id;
+	int _size_uniform_loc;
 };
 
 inline void checkShaderErrors(unsigned int ShaderProgram)

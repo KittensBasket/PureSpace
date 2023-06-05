@@ -2,15 +2,18 @@
 #define SYSTEMS_GRAPHICS_HPP
 
 #include <string>
+#include "exception.hpp"
 
 #include "GL/glew.h"
 #include <GLFW/glfw3.h>
 
 #define STB_IMAGE_IMPLEMENTATION
-#include "../ext/stb_image.h"
+#include "../ext/stb/stb_image.h"
 
 #include "game_constants.hpp"
-#include "exception.hpp"
+#include "shader_program.hpp"
+
+#include <iostream>
 
 /*
     Draw call would look like this:
@@ -23,7 +26,7 @@ struct GraphicsData
 {
   private:
 	unsigned int makeVBO(const std::vector<vertex> &base_vertices, const std::vector<vertex> &base_texture,
-	                     const size_t max_instance_cnt)
+	                     const unsigned int max_instance_cnt)
 	{
 		unsigned int id;
 
@@ -49,7 +52,7 @@ struct GraphicsData
 
 		int width, height, col_channels;
 		stbi_set_flip_vertically_on_load(true);
-		unsigned char *image_data = stbi_load(texture_path, &width, &height, &col_channels, 0);
+		unsigned char *image_data = stbi_load(texture_path, &width, &height, &col_channels, 4);
 
 		if (!image_data)
 			throw std::domain_error("Unable to load image in \"" + std::string(texture_path) + "\"");
@@ -62,7 +65,7 @@ struct GraphicsData
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image_data);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image_data);
 		glGenerateMipmap(GL_TEXTURE_2D);
 
 		stbi_image_free(image_data);
@@ -77,14 +80,19 @@ struct GraphicsData
 
 	unsigned int _texture_id;
 
-	const size_t instance_offset;
+	const unsigned int instance_offset;
 	const unsigned int max_instance_cnt;
+
+	const float _size;
+	const int _size_loc;
+
+	std::vector<instance> instances;
 
   public:
 	GraphicsData(const std::vector<vertex> &base_vertices, const std::vector<vertex> &base_texture,
-	             const std::vector<polygon> &base_indicies, const char *texture_path,
+	             const std::vector<polygon> &base_indicies, const char *texture_path, const float instance_size, const int size_loc,
 	             const unsigned int max_instance_cnt)
-	    : instance_offset((base_vertices.size() + base_texture.size()) * sizeof(vertex)),
+	    : instance_offset((base_vertices.size() + base_texture.size()) * sizeof(vertex)), _size(instance_size), _size_loc(size_loc),
 	      max_instance_cnt(max_instance_cnt)
 	{
 
@@ -132,27 +140,33 @@ struct GraphicsData
 		glDeleteBuffers(1, &_VBO);
 		glDeleteBuffers(1, &_IBO);
 		glDeleteVertexArrays(1, &_VAO);
-		glDeleteTextures(1, (const unsigned int *)_texture_id);
+		glDeleteTextures(1, &_texture_id);
 	}
 
-	void writeInstances(const std::vector<instance> &instances)
+	void draw()
 	{
 		if (instances.size() > max_instance_cnt)
 			throw std::length_error("Unable to write " + std::to_string(instances.size()) +
 			                        " instances into buffer with max instances of " + std::to_string(max_instance_cnt));
-
+			
 		glBindBuffer(GL_ARRAY_BUFFER, _VBO);
 		glBufferSubData(GL_ARRAY_BUFFER, instance_offset, instances.size() * sizeof(instances), instances.data());
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
-	}
-
-	void use()
-	{
+	
 		glBindVertexArray(_VAO);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _IBO);
 
 		glBindTexture(GL_TEXTURE_2D, _texture_id);
+
+		glUniform1f(_size_loc, _size);
+
+		glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, 0, instances.size());
+		instances.clear();
 	}
+
+	std::vector<instance>* get_vec() {
+		return &instances;
+	} 
 };
 
 #endif // SYSTEMS_GRAPHICS_HPP

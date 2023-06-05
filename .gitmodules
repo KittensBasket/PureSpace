@@ -7,3 +7,9 @@
 [submodule "ext/glfw"]
 	path = ext/glfw
 	url = https://github.com/glfw/glfw.git
+[submodule "ext/stb"]
+	path = ext/stb
+	url = https://github.com/nothings/stb.git
+[submodule "ext/gtest"]
+	path = ext/gtest
+	url = https://github.com/google/googletest

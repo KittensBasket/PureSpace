@@ -1,9 +1,6 @@
 #ifndef CORE_APP_HPP
 #define CORE_APP_HPP
 
-/* Std: */
-#include <iostream>
-
 /* External: */
 #include "GL/glew.h"
 #include "GLFW/glfw3.h"
@@ -13,7 +10,7 @@
 #include "game.hpp"
 #include "shader_program.hpp"
 
-void glfw_error_callback(int error, const char *description)
+inline void glfw_error_callback(int error, const char *description)
 {
 	throw OpenglError(description);
 }
@@ -54,6 +51,10 @@ class App
 			throw OpenglError("Unable to initialize GLEW.");
 		}
 
+		/* Enable blend and transparency: */
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
 		/* Compile and use shader program: */
 		ShaderProgram shader_program("../res/shaders/vertex.vert", "../res/shaders/fragment.frag");
 		shader_program.use();
@@ -61,7 +62,7 @@ class App
 		/*!!! TODO: here must the be implementaion of main menu before game itself is launched !!!*/
 
 		/* Laucnh game: */
-		Game game(window);
+		Game game(window, shader_program);
 		game.run();
 
 		glfwTerminate();
