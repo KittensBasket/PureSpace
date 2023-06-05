@@ -16,10 +16,10 @@
 #include <iostream>
 
 /*
-    Draw call would look like this:
-    graphic_data.use();
-    glDrawArraysInstances(GL_TRIANGLES, 0, prim_vertex.size(),
-   instances.size());
+	GraphicsData buffer structure:
+	Base vertex info,
+	Texture coordinates, which will be mapped on base vertices,
+	Instance info (coordinates + angle)
 */
 
 struct GraphicsData
@@ -45,7 +45,7 @@ struct GraphicsData
 
 		return id;
 	}
-
+	
 	unsigned int makeTexture(const char *texture_path)
 	{
 		unsigned int texture_id;
@@ -143,6 +143,9 @@ struct GraphicsData
 		glDeleteTextures(1, &_texture_id);
 	}
 
+	/*
+		Draws instances onto current window
+	*/
 	void draw()
 	{
 		if (instances.size() > max_instance_cnt)
@@ -164,6 +167,10 @@ struct GraphicsData
 		instances.clear();
 	}
 
+	/*
+		Returns instance buffer
+		Write instance data here to later render it
+	*/
 	std::vector<instance>* get_vec() {
 		return &instances;
 	} 
