@@ -25,7 +25,6 @@ target_include_directories(${PROJECT_NAME}
     PUBLIC ext/glfw/include
     PUBLIC ext/entt/single_include
     PUBLIC ext/stb
-    PUBLIC ext/gtest/googletest/include
 )
 
 target_link_directories(${PROJECT_NAME}
@@ -38,3 +37,7 @@ target_link_libraries(${PROJECT_NAME}
     GLEW::GLEW
     glfw
 )
+
+add_subdirectory(tests)
+enable_testing()
+add_test(NAME gtest-tests COMMAND tests/PureSpace-tests --gtest_output:./PureSpace-tests.xml)
