@@ -17,6 +17,7 @@ include(GoogleTest)
 set (TESTS
 	collision_test.hpp
 	shader_test.hpp
+	graphics_test.hpp
 )
 
 add_executable(${PROJECT_NAME} main.cpp ${TESTS})
