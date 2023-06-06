@@ -1,20 +1,17 @@
-#ifndef SYSTEMS_GRAPHICS_HPP
-#define SYSTEMS_GRAPHICS_HPP
+#ifndef CORE_GRAPHICS_HPP
+#define CORE_GRAPHICS_HPP
 
-#include <GL/gl.h>
 #include <string>
-#include "exception.hpp"
 
 #include "GL/glew.h"
-#include <GLFW/glfw3.h>
+#include "GLFW/glfw3.h"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "../ext/stb/stb_image.h"
 
+#include "exception.hpp"
 #include "game_constants.hpp"
 #include "shader_program.hpp"
-
-#include <iostream>
 
 /*
 	GraphicsData buffer structure:
@@ -106,6 +103,8 @@ struct GraphicsData
 		if (base_vertices.size() != base_texture.size())
 			throw std::invalid_argument("Base vertices and texture vertices size mismatch.");
 
+		instances.reserve(max_instance_cnt);
+
 		_VBO = makeVBO(base_vertices, base_texture, max_instance_cnt);
 		glGenBuffers(1, &_IBO);
 		glGenVertexArrays(1, &_VAO);
@@ -154,7 +153,7 @@ struct GraphicsData
 			                        " instances into buffer with max instances of " + std::to_string(max_instance_cnt));
 			
 		glBindBuffer(GL_ARRAY_BUFFER, _VBO);
-		glBufferSubData(GL_ARRAY_BUFFER, instance_offset, instances.size() * sizeof(instances), instances.data());
+		glBufferSubData(GL_ARRAY_BUFFER, instance_offset, instances.size() * sizeof(instance), instances.data());
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 	
 		glBindVertexArray(_VAO);
@@ -166,6 +165,7 @@ struct GraphicsData
 
 		glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, 0, instances.size());
 		instances.clear();
+		instances.reserve(max_instance_cnt);
 	}
 
 	/*
@@ -177,4 +177,4 @@ struct GraphicsData
 	} 
 };
 
-#endif // SYSTEMS_GRAPHICS_HPP
+#endif // CORE_GRAPHICS_HPP
