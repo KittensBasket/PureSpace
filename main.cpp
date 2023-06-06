@@ -8,7 +8,7 @@ int main(void)
         App app;
         app.run();
     } catch(std::exception& ex) {
-        ex.what();
+        std::cerr << ex.what() << std::endl;
     }
 
     return 0;

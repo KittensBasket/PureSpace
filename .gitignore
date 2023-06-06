@@ -49,3 +49,6 @@ build
 
 # Clangd cache
 .cache
+
+# VSCode
+.vscode
