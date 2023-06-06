@@ -4,7 +4,6 @@
 #include <filesystem>
 #include <iostream>
 #include <ostream>
-#include <random>
 
 #include "factories.hpp"
 #include "frame_clock.hpp"
@@ -60,6 +59,7 @@ class Game {
 
 	void run() {
 
+		gen_random.seed(time(0));
 		metadata meta{registry, 0.f, 0.f};
 
 		glfwSetKeyCallback(window, key_callback);
@@ -82,8 +82,7 @@ class Game {
 		graphics_map[PLAYER] = &player_data;
 
 		entt::entity background = makeBackground(registry);
-		entt::entity player = makePlayer(registry, {0.5, 0.5, 0}, {0, 0});
-		entt::entity asteroid1 = makeAsteroid(registry, {0, 0, 0}, {.002, -.002});
+		entt::entity player = makePlayer(registry, {0., 0., 3.14/2}, {0, 0});
 
 		// entt::entity asteroid2 = makeAsteroid(registry);
 		// entt::entity asteroid3 = makeAsteroid(registry);
@@ -102,6 +101,8 @@ class Game {
 			glClear(GL_COLOR_BUFFER_BIT);
 			glClearColor(0.f, 0.f, 0.f, 1.f);
 
+			factory_system(registry, gen_random);
+			destructor_system(registry);
 			collision_system(registry, is_player_alive);
 			movement_system(registry);
 			graphics_system(registry, graphics_map);

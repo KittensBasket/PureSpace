@@ -2,6 +2,8 @@
 #define CORE_SYSTEMS_HPP
 
 #include <cmath>
+#include <random>
+#include <iostream>
 
 #include "GLFW/glfw3.h"
 
@@ -27,6 +29,53 @@ inline void controls_system(entt::registry &reg, const float input_vel, const fl
 		auto &[vel, ang_vel] = view.get<Velocity>(e);
 		vel = input_vel;
 		ang_vel = input_ang_vel;
+	}
+}
+
+inline void factory_system(entt::registry &reg, std::mt19937& random) {
+	auto view = reg.view<Asteroid>();
+	unsigned int asteroid_cnt = view.size();
+
+	while (asteroid_cnt < ASTEROIDS_CNT) {
+		float x_rand, y_rand, rot_rand;
+		float vel, rot_vel;
+		switch (random() % 4) {
+		 	case 0:
+		 		x_rand = float(random() % 31 - 15) / 10.;
+		 		y_rand = float(random() % 5 + 11) / 10.;
+				break;
+		 	case 1:
+		 		x_rand = float(random() % 31 - 15) / 10.;
+		 		y_rand = float(random() % 5 + 11) / -10.;
+				break;
+		 	case 2:
+		 		x_rand = float(random() % 5 + 11) / 10.;  
+		 		y_rand = float(random() % 31 - 15) / 10.;
+				break;
+		 	case 3:
+		 		x_rand = float(random() % 5 + 11) / -10.;  
+		 		y_rand = float(random() % 31 - 15) / 10.;
+				break;
+		 }
+		rot_rand = float(random() % 360);
+
+		rot_vel = 0;
+		vel = float(random() % ASTEROIDS_SPEED - (ASTEROIDS_SPEED/ 2.)) / 100. + 0.01;
+
+		PositionAngle pos_rand = {x_rand, y_rand, rot_rand};
+		Velocity vel_rand = {vel, rot_vel};
+
+		makeAsteroid(reg, pos_rand, vel_rand);
+		asteroid_cnt++;
+	}
+ }
+
+inline void destructor_system(entt::registry &reg) {
+	auto view = reg.view<PositionAngle>();
+	for(entt::entity e : view) {
+		PositionAngle pos =  view.get<PositionAngle>(e);
+		if (pos.x > 1.5 || pos.x < -1.5 || pos.y > 1.5 || pos.y < -1.5)
+			reg.destroy(e);
 	}
 }
 

@@ -40,7 +40,7 @@ const std::vector<vertex> SQUARE_TEXTURE_COORDS = {{1.f, 1.f}, {1.f, 0.f}, {0.f,
 const std::vector<polygon> SQUARE_POLYGONS = {{0, 1, 3}, {1, 2, 3}};
 
 const Hitbox PLAYER_HITBOX = []() {
-	std::vector<vertex> v = SQUARE_VERTICES;
+	std::vector<vertex> v = {{0.5, 0}, {-0.4, 0.45}, {-0.4, -0.45}};
 	for (auto &vert : v)
 		vert = vert * player_scale;
 	return v;
@@ -55,6 +55,10 @@ const Hitbox ASTEROID_HITBOX = []() {
 
 const unsigned int MAX_CHMONYA_INSTANCES_CNT = 1024;
 const unsigned int MAX_ASTEROIDS_INSTANCES_CNT = 1024;
+
+const unsigned int ASTEROIDS_CNT = 16;
+const unsigned int  ASTEROIDS_SPEED = 1;
+const unsigned int  ASTEROIDS_ANGLE_SPEED = 15;
 
 const float PLAYER_SPEED = 0.01;
 const float PLAYER_ANGLE_SPEED = 0.1;
