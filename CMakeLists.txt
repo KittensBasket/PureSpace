@@ -17,6 +17,13 @@ set(SOURCES
 
 add_executable(${PROJECT_NAME} ${SOURCES})
 
+add_custom_command(
+	TARGET ${PROJECT_NAME} POST_BUILD
+	COMMAND ${CMAKE_COMMAND} -E copy_directory
+		${CMAKE_CURRENT_SOURCE_DIR}/res
+		${CMAKE_CURRENT_BINARY_DIR}/res
+)
+
 add_subdirectory(ext/glfw)
 add_subdirectory(ext/entt)
 add_subdirectory(ext/gtest)
@@ -40,4 +47,4 @@ target_link_libraries(${PROJECT_NAME}
 
 add_subdirectory(tests)
 enable_testing()
-add_test(NAME gtest-tests COMMAND tests/PureSpace-tests --gtest_output:./PureSpace-tests.xml)
+add_test(NAME gtest-tests COMMAND tests/PureSpace-tests --gtest_output=xml:./PureSpace-tests.xml)
