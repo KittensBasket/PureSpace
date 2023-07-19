@@ -9,12 +9,13 @@ jobs:
           fetch-depth: 0 # Shallow clones should be disabled for a better relevancy of analysis
       - run: sudo apt-get update
       - run: sudo apt-get install --fix-missing libgl1-mesa-dev libglew-dev libxrandr-dev libxinerama-dev libx11-dev libxext-dev libxcursor-dev libxi-dev
+      - run: sudo apt-get install xvfb
       - run: git submodule init
       - run: git submodule update
       - run: pip install --user cpp-coveralls
       - run: cmake .
       - run: make
-      - run: make CTEST_OUTPUT_ON_FAILURE=1  test
+      - run: xvfb-run make CTEST_OUTPUT_ON_FAILURE=1 test
 
       - name: Coveralls
         run: coveralls -t ${{ secrets.coveralls_token }} --root . -E ".*external.*" -E ".*tests.*" -E ".*CMakeFiles.*" --exclude "ext"
