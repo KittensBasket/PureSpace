@@ -10,22 +10,22 @@ struct ShaderProgramError : std::exception
 	{
 	}
 
-	ShaderProgramError(const char *msg) : message(msg)
+	ShaderProgramError(const char *msg) : message(message_prefix + std::string(msg))
 	{
 	}
 
-	ShaderProgramError(const std::string msg) : message(msg)
+	ShaderProgramError(const std::string msg) : message(message_prefix + msg)
 	{
 	}
 
-	const char *what() const noexcept
+	const char *what() const noexcept override
 	{
-		return (message_prefix + message).data();
+		return message.data();
 	}
 
   private:
 	const std::string message_prefix = "Shader program error. ";
-	const std::string message;
+	const std::string message = "";
 };
 
 struct OpenglError : std::exception
@@ -34,22 +34,22 @@ struct OpenglError : std::exception
 	{
 	}
 
-	OpenglError(const char *msg) : message(msg)
+	OpenglError(const char *msg) : message(message_prefix + std::string(msg))
 	{
 	}
 
-	OpenglError(const std::string msg) : message(msg)
+	OpenglError(const std::string msg) : message(message_prefix + msg)
 	{
 	}
 
-	const char *what() const noexcept
+	const char *what() const noexcept override
 	{
-		return (message_prefix + message).c_str();
+		return message.data();
 	}
 
   private:
 	const std::string message_prefix = "OpenGL error. ";
-	const std::string message;
+	const std::string message = "";
 };
 
 #endif //CORE_EXCEPTION_HPP
