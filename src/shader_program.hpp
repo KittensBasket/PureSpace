@@ -9,6 +9,8 @@
 
 #include "exception.hpp"
 
+const size_t max_len = 2048;
+
 void checkShaderErrors(unsigned int ShaderProgram);
 void checkShaderProgramErrors(unsigned int program);
 
@@ -16,7 +18,7 @@ struct ShaderProgram
 {
 	ShaderProgram(const std::string vertex_path, const std::string fragment_path)
 	{
-		std::ifstream vertex_stream(vertex_path), fragment_stream(fragment_path, std::ios::binary | std::ios::in);
+		std::ifstream vertex_stream(vertex_path, std::ios::binary), fragment_stream(fragment_path, std::ios::binary);
 
 		if (!vertex_stream)
 			throw std::domain_error("Unable to open vertex shader in \"" + vertex_path + "\"");
@@ -24,29 +26,28 @@ struct ShaderProgram
 		if (!fragment_stream)
 			throw std::domain_error("Unable to open fragment shader in \"" + fragment_path + "\"");
 
-		char *vertex_src = new char[2048];
-		char *fragment_src = new char[2048];
+		char *vertex_src = new char[max_len];
+		char *fragment_src = new char[max_len];
 
-		vertex_stream.read(vertex_src, 2048);
-		fragment_stream.read(fragment_src, 2048);
+		std::fill(vertex_src, vertex_src + max_len, 0);
+		std::fill(fragment_src, fragment_src + max_len, 0);
+
+		vertex_stream.read(vertex_src, max_len);
+		fragment_stream.read(fragment_src, max_len);
 
 		vertex_stream.close();
 		fragment_stream.close();
 
 		unsigned int vertex, fragment;
 
-		const char *vertex_src_c = vertex_src;
-
 		vertex = glCreateShader(GL_VERTEX_SHADER);
-		glShaderSource(vertex, 1, &vertex_src_c, NULL);
+		glShaderSource(vertex, 1, &vertex_src, NULL);
 
 		glCompileShader(vertex);
 		checkShaderErrors(vertex);
 
-		const char *fragment_src_c = fragment_src;
-
 		fragment = glCreateShader(GL_FRAGMENT_SHADER);
-		glShaderSource(fragment, 1, &fragment_src_c, NULL);
+		glShaderSource(fragment, 1, &fragment_src, NULL);
 
 		glCompileShader(fragment);
 		checkShaderErrors(fragment);
@@ -61,6 +62,9 @@ struct ShaderProgram
 
 		glDeleteShader(vertex);
 		glDeleteShader(fragment);
+
+		delete[] vertex_src;
+		delete[] fragment_src;
 
 		_size_uniform_loc = glGetUniformLocation(_id, "Size");
 		if(_size_uniform_loc == -1)
